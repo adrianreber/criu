@@ -1,0 +1,25 @@
+name: Cross Compile Tests
+
+on:
+  push:
+    branches: [criu-dev, master]
+  pull_request:
+    branches: [criu-dev, master]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [armv7-cross, aarch64-cross, ppc64-cross, mips64el-cross]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Print Kernel Version
+      run: uname -a
+    - name: Print Podman Version
+      run: podman version
+    - name: Run Cross Compilation Targets
+      run: >
+        sudo make -C scripts/travis ${{ matrix.target }}
