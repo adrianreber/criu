@@ -1,22 +1,22 @@
 #!/bin/bash
 set -x -e -o pipefail
 
-echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+#echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
 
-wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_18.04/Release.key -O- | apt-key add -
+#wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_18.04/Release.key -O- | apt-key add -
 
 # podman conflicts with a man page from docker-ce
 # this is a podman packaging bug (https://github.com/containers/libpod/issues/4747)
-apt-get -y purge docker-ce
+#apt-get -y purge docker-ce
 
-apt-get install -qq \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
+#apt-get install -qq \
+#    apt-transport-https \
+#    ca-certificates \
+#    curl \
+#    software-properties-common
 
-apt-get update -qq
-apt-get install -qqy podman containernetworking-plugins
+#apt-get update -qq
+#apt-get install -qqy podman containernetworking-plugins
 
 export SKIP_TRAVIS_TEST=1
 
