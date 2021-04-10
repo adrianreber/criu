@@ -1,0 +1,28 @@
+# See the documentation for more information:
+# https://packit.dev/docs/configuration/
+
+specfile_path: criu.spec
+
+# add or remove files that should be synced
+synced_files:
+    - criu.spec
+    - .packit.yaml
+    - criu-tmpfiles.conf
+
+current_version_command: ["make", "show-version"]
+
+# name in upstream package repository/registry (e.g. in PyPI)
+upstream_package_name: criu
+# downstream (Fedora) RPM package name
+downstream_package_name: criu
+actions:
+  post-upstream-clone:
+  - "wget https://src.fedoraproject.org/rpms/criu/raw/rawhide/f/criu.spec -O criu.spec"
+  - "wget https://src.fedoraproject.org/rpms/criu/raw/rawhide/f/criu-tmpfiles.conf -O criu-tmpfiles.conf"
+
+jobs:
+- job: copr_build
+  trigger: pull_request
+  metadata:
+    targets:
+    - fedora-all
