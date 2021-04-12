@@ -9,8 +9,6 @@ synced_files:
     - .packit.yaml
     - criu-tmpfiles.conf
 
-current_version_command: ["make", "show-version"]
-
 # name in upstream package repository/registry (e.g. in PyPI)
 upstream_package_name: criu
 # downstream (Fedora) RPM package name
@@ -19,7 +17,8 @@ actions:
   post-upstream-clone:
   - "wget https://src.fedoraproject.org/rpms/criu/raw/rawhide/f/criu.spec -O criu.spec"
   - "wget https://src.fedoraproject.org/rpms/criu/raw/rawhide/f/criu-tmpfiles.conf -O criu-tmpfiles.conf"
-
+#   get-current-version:
+#   - bash -c "make show-version | sed s/\\-/./"
 jobs:
 - job: copr_build
   trigger: pull_request
