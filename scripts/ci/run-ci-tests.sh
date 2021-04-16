@@ -90,6 +90,7 @@ print_header() {
 }
 
 print_env() {
+	set +x
 	# As this script can run on multiple different CI systems
 	# the following lines should give some context to the
 	# evnvironment of this CI run.
@@ -105,6 +106,25 @@ print_env() {
 	[ -e /etc/lsb-release ] && cat /etc/lsb-release
 	[ -e /etc/redhat-release ] && cat /etc/redhat-release
 	[ -e /etc/alpine-release ] && cat /etc/alpine-release
+	if [ -e /etc/os-release ]; then
+		# shellcheck disable=SC1091
+		. /etc/os-release
+		if [ "${NAME}" = "Fedora" ] && [ "${VERSION_ID}" = "33" ]; then
+			# The tun_ns test fails only on Fedora 33 with
+			# Error (criu/net.c:1818): IP tool failed on route save'
+			# Skip it
+			ZDTM_OPTS="$ZDTM_OPTS -x zdtm/static/tun_ns"
+		fi
+		if [ "${NAME}" = "Fedora" ] && [ "${VERSION_ID}" = "35" ]; then
+			# Error injection fails on Fedora 35
+			KERN_MAJ=$(uname -r | cut -d. -f1)
+			KERN_MIN=$(uname -r | cut -d. -f2)
+			if [ "$KERN_MAJ" = "5" ] && [ "$KERN_MIN" -gt "11" ]; then
+				SKIP_CRIU_FAULT=1
+			fi
+		fi
+	fi
+
 	print_header "ulimit -a"
 	ulimit -a
 	print_header "Available memory"
@@ -116,6 +136,7 @@ print_env() {
 	fi
 	print_header "Available CPUs"
 	lscpu || :
+	set -x
 }
 
 print_env
@@ -217,14 +238,23 @@ LAZY_EXCLUDE="-x maps04 -x cmdlinenv00 -x maps007"
 LAZY_TESTS='.*(maps0|uffd-events|lazy-thp|futex|fork).*'
 LAZY_OPTS="-p 2 -T $LAZY_TESTS $LAZY_EXCLUDE $ZDTM_OPTS"
 
-# shellcheck disable=SC2086
-./test/zdtm.py run $LAZY_OPTS --lazy-pages
-# shellcheck disable=SC2086
-./test/zdtm.py run $LAZY_OPTS --remote-lazy-pages
-# shellcheck disable=SC2086
-./test/zdtm.py run $LAZY_OPTS --remote-lazy-pages --tls
+if [ -e /proc/sys/vm/unprivileged_userfaultfd ]; then
+	# Starting with 5.2 to use usefaultfd in a user space
+	# this needs to be set.
+	echo 1 > /proc/sys/vm/unprivileged_userfaultfd
+fi
 
-bash -x ./test/jenkins/criu-fault.sh
+# shellcheck disable=SC2086
+./test/zdtm.py run $LAZY_OPTS --lazy-pages --keep-going
+# shellcheck disable=SC2086
+./test/zdtm.py run $LAZY_OPTS --remote-lazy-pages --keep-going
+# shellcheck disable=SC2086
+./test/zdtm.py run $LAZY_OPTS --remote-lazy-pages --tls --keep-going
+
+if [ -n "$SKIP_CRIU_FAULT" ]; then
+	bash -x ./test/jenkins/criu-fault.sh
+fi
+
 if [ "$UNAME_M" == "x86_64" ]; then
 	# This fails on aarch64 (aws-graviton2) with:
 	# 33: ERR: thread-bomb.c:49: pthread_attr_setstacksize(): 22

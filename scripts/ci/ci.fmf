@@ -1,0 +1,13 @@
+summary:
+    Run CI test suite
+environment:
+  CD_TO_TOP: 1
+  SKIP_CI_PREP: 1
+  CC: gcc
+test:
+  ./prepare-for-fedora-rawhide.sh;
+  dnf install -y libselinux-devel;
+  systemctl stop sssd;
+  ln -sf /usr/include/google/protobuf/descriptor.proto ../../images/google/protobuf/descriptor.proto;
+  ./run-ci-tests.sh
+duration: 60m

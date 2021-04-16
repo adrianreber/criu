@@ -14,6 +14,7 @@ dnf install -y \
 	nftables-devel \
 	libaio-devel \
 	libasan \
+	libbsd-devel \
 	libcap-devel \
 	libnet-devel \
 	libnl3-devel \

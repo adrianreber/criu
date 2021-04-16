@@ -202,7 +202,7 @@ criu-deps	+= include/common/asm
 #
 # Configure variables.
 export CONFIG_HEADER := include/common/config.h
-ifeq ($(filter tags etags cscope clean mrproper,$(MAKECMDGOALS)),)
+ifeq ($(filter tags etags cscope clean mrproper show-version help,$(MAKECMDGOALS)),)
 include Makefile.config
 else
 # To clean all files, enable make/build options here
@@ -349,6 +349,10 @@ criu-$(tar-name).tar.bz2:
 dist tar: criu-$(tar-name).tar.bz2 ;
 .PHONY: dist tar
 
+show-version:
+	@echo $(head-name)
+.PHONY: show-version
+
 TAGS_FILES_REGEXP := . -name '*.[hcS]' ! -path './.*' \( ! -path './test/*' -o -path './test/zdtm/lib/*' \)
 tags:
 	$(call msg-gen, $@)
@@ -402,6 +406,7 @@ help:
 	@echo '      cscope          - Generate cscope database'
 	@echo '      test            - Run zdtm test-suite'
 	@echo '      gcov            - Make code coverage report'
+	@echo '      show-version    - Show current CRIU version'
 .PHONY: help
 
 lint:
