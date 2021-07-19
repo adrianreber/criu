@@ -14,8 +14,8 @@
 
 #include "zdtmtst.h"
 
-const char *test_doc="Tests sysv5 msg queues supporting by checkpointing";
-const char *test_author="Stanislav Kinsbursky <skinsbursky@openvz.org>";
+const char *test_doc = "Tests sysv5 msg queues supporting by checkpointing";
+const char *test_author = "Stanislav Kinsbursky <skinsbursky@openvz.org>";
 
 struct msg1 {
 	long mtype;
@@ -102,8 +102,7 @@ int main(int argc, char **argv)
 		wait(&chret);
 		chret = WEXITSTATUS(chret);
 		if (chret) {
-			fail("Parent: child exited with non-zero code %d (%s)",
-			     chret, strerror(chret));
+			fail("Parent: child exited with non-zero code %d (%s)", chret, strerror(chret));
 			goto out;
 		}
 

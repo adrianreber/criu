@@ -9,8 +9,8 @@
 
 #include "zdtmtst.h"
 
-const char *test_doc	= "Check a shared file descriptor table.";
-const char *test_author	= "Andrew Vagin <avagin@openvz.org>";
+const char *test_doc = "Check a shared file descriptor table.";
+const char *test_author = "Andrew Vagin <avagin@openvz.org>";
 
 char *filename;
 TEST_OPTION(filename, string, "file name", 1);
@@ -50,8 +50,7 @@ static pid_t clone_child(int (*fn)(void *), int flags)
 	char stack[STACK_SIZE] __stack_aligned__;
 	pid_t pid;
 
-	pid = clone(fn, stack + STACK_SIZE,
-			flags | SIGCHLD, NULL);
+	pid = clone(fn, stack + STACK_SIZE, flags | SIGCHLD, NULL);
 	if (pid == -1) {
 		pr_perror("Unable to clone a new process");
 		return -1;
@@ -134,7 +133,7 @@ static int child(void *_arg)
 	return 0;
 }
 
-int main(int argc, char ** argv)
+int main(int argc, char **argv)
 {
 	int status;
 	pid_t pid, pid2;

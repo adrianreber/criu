@@ -85,14 +85,12 @@ static void sigchld_handler(int signal, siginfo_t *siginfo, void *data)
 	if (pid <= 0)
 		return;
 
-	pr_err("si_code=%d si_pid=%d si_status=%d\n",
-		siginfo->si_code, siginfo->si_pid, siginfo->si_status);
+	pr_err("si_code=%d si_pid=%d si_status=%d\n", siginfo->si_code, siginfo->si_pid, siginfo->si_status);
 
 	if (WIFEXITED(status))
 		pr_err("%d exited with %d unexpectedly\n", pid, WEXITSTATUS(status));
 	else if (WIFSIGNALED(status))
-		pr_err("%d was killed by %d unexpectedly: %s\n",
-			pid, WTERMSIG(status), strsignal(WTERMSIG(status)));
+		pr_err("%d was killed by %d unexpectedly: %s\n", pid, WTERMSIG(status), strsignal(WTERMSIG(status)));
 	else if (WIFSTOPPED(status))
 		pr_err("%d was stopped by %d unexpectedly\n", pid, WSTOPSIG(status));
 
@@ -117,19 +115,19 @@ static int alloc_groups_copy_creds(CredsEntry *ce, struct parasite_dump_creds *c
 	memcpy(ce->cap_eff, c->cap_eff, sizeof(c->cap_eff[0]) * CR_CAP_SIZE);
 	memcpy(ce->cap_bnd, c->cap_bnd, sizeof(c->cap_bnd[0]) * CR_CAP_SIZE);
 
-	ce->secbits	= c->secbits;
-	ce->n_groups	= c->ngroups;
+	ce->secbits = c->secbits;
+	ce->n_groups = c->ngroups;
 
-	ce->groups	= xmemdup(c->groups, sizeof(c->groups[0]) * c->ngroups);
+	ce->groups = xmemdup(c->groups, sizeof(c->groups[0]) * c->ngroups);
 
-	ce->uid		= c->uids[0];
-	ce->gid		= c->gids[0];
-	ce->euid	= c->uids[1];
-	ce->egid	= c->gids[1];
-	ce->suid	= c->uids[2];
-	ce->sgid	= c->gids[2];
-	ce->fsuid	= c->uids[3];
-	ce->fsgid	= c->gids[3];
+	ce->uid = c->uids[0];
+	ce->gid = c->gids[0];
+	ce->euid = c->uids[1];
+	ce->egid = c->gids[1];
+	ce->suid = c->uids[2];
+	ce->sgid = c->gids[2];
+	ce->fsuid = c->uids[3];
+	ce->fsgid = c->gids[3];
 
 	return ce->groups ? 0 : -ENOMEM;
 }
@@ -161,9 +159,8 @@ int parasite_dump_thread_leader_seized(struct parasite_ctl *ctl, int pid, CoreEn
 	return dump_thread_core(pid, core, args);
 }
 
-int parasite_dump_thread_seized(struct parasite_thread_ctl *tctl,
-				struct parasite_ctl *ctl, int id,
-				struct pid *tid, CoreEntry *core)
+int parasite_dump_thread_seized(struct parasite_thread_ctl *tctl, struct parasite_ctl *ctl, int id, struct pid *tid,
+				CoreEntry *core)
 {
 	struct parasite_dump_thread *args;
 	pid_t pid = tid->real;
@@ -182,7 +179,7 @@ int parasite_dump_thread_seized(struct parasite_thread_ctl *tctl,
 	tc->has_blk_sigset = true;
 #ifdef CONFIG_MIPS
 	memcpy(&tc->blk_sigset, (unsigned long *)compel_thread_sigmask(tctl), sizeof(tc->blk_sigset));
-	memcpy(&tc->blk_sigset_extended, (unsigned long *)compel_thread_sigmask(tctl)+1, sizeof(tc->blk_sigset));
+	memcpy(&tc->blk_sigset_extended, (unsigned long *)compel_thread_sigmask(tctl) + 1, sizeof(tc->blk_sigset));
 #else
 	memcpy(&tc->blk_sigset, compel_thread_sigmask(tctl), sizeof(k_rtsigset_t));
 #endif
@@ -292,15 +289,14 @@ int parasite_dump_itimers_seized(struct parasite_ctl *ctl, struct pstree_item *i
 	if (ret < 0)
 		return ret;
 
-	encode_itimer((&args->real), (core->tc->timers->real));			\
-	encode_itimer((&args->virt), (core->tc->timers->virt));			\
-	encode_itimer((&args->prof), (core->tc->timers->prof));			\
+	encode_itimer((&args->real), (core->tc->timers->real));
+	encode_itimer((&args->virt), (core->tc->timers->virt));
+	encode_itimer((&args->prof), (core->tc->timers->prof));
 
 	return 0;
 }
 
-static int core_alloc_posix_timers(TaskTimersEntry *tte, int n,
-		PosixTimerEntry **pte)
+static int core_alloc_posix_timers(TaskTimersEntry *tte, int n, PosixTimerEntry **pte)
 {
 	int sz;
 
@@ -318,8 +314,7 @@ static int core_alloc_posix_timers(TaskTimersEntry *tte, int n,
 	return 0;
 }
 
-static void encode_posix_timer(struct posix_timer *v,
-		struct proc_posix_timer *vp, PosixTimerEntry *pte)
+static void encode_posix_timer(struct posix_timer *v, struct proc_posix_timer *vp, PosixTimerEntry *pte)
 {
 	pte->it_id = vp->spt.it_id;
 	pte->clock_id = vp->spt.clock_id;
@@ -335,8 +330,8 @@ static void encode_posix_timer(struct posix_timer *v,
 	pte->vnsec = v->val.it_value.tv_nsec;
 }
 
-int parasite_dump_posix_timers_seized(struct proc_posix_timers_stat *proc_args,
-		struct parasite_ctl *ctl, struct pstree_item *item)
+int parasite_dump_posix_timers_seized(struct proc_posix_timers_stat *proc_args, struct parasite_ctl *ctl,
+				      struct pstree_item *item)
 {
 	CoreEntry *core = item->core[0];
 	TaskTimersEntry *tte = core->tc->timers;
@@ -403,9 +398,8 @@ struct parasite_tty_args *parasite_dump_tty(struct parasite_ctl *ctl, int fd, in
 	return p;
 }
 
-int parasite_drain_fds_seized(struct parasite_ctl *ctl,
-		struct parasite_drain_fd *dfds, int nr_fds, int off,
-		int *lfds, struct fd_opts *opts)
+int parasite_drain_fds_seized(struct parasite_ctl *ctl, struct parasite_drain_fd *dfds, int nr_fds, int off, int *lfds,
+			      struct fd_opts *opts)
 {
 	int ret = -1, size, sk;
 	struct parasite_drain_fd *args;
@@ -483,8 +477,7 @@ static int make_sigframe(void *arg, struct rt_sigframe *sf, struct rt_sigframe *
 	return construct_sigframe(sf, rtsf, bs, (CoreEntry *)arg);
 }
 
-static int parasite_prepare_threads(struct parasite_ctl *ctl,
-				    struct pstree_item *item)
+static int parasite_prepare_threads(struct parasite_ctl *ctl, struct pstree_item *item)
 {
 	struct parasite_thread_ctl **thread_ctls;
 	uint64_t *thread_sp;
@@ -525,8 +518,7 @@ free_ctls:
 	return -1;
 }
 
-struct parasite_ctl *parasite_infect_seized(pid_t pid, struct pstree_item *item,
-		struct vm_area_list *vma_area_list)
+struct parasite_ctl *parasite_infect_seized(pid_t pid, struct pstree_item *item, struct vm_area_list *vma_area_list)
 {
 	struct parasite_ctl *ctl;
 	struct infect_ctx *ictx;
@@ -593,8 +585,10 @@ struct parasite_ctl *parasite_infect_seized(pid_t pid, struct pstree_item *item,
 
 	parasite_args_size = PARASITE_ARG_SIZE_MIN; /* reset for next task */
 #ifdef CONFIG_MIPS
-	memcpy(&item->core[0]->tc->blk_sigset, (unsigned long *)compel_task_sigmask(ctl), sizeof(item->core[0]->tc->blk_sigset));
-	memcpy(&item->core[0]->tc->blk_sigset_extended, (unsigned long *)compel_task_sigmask(ctl)+1, sizeof(item->core[0]->tc->blk_sigset));
+	memcpy(&item->core[0]->tc->blk_sigset, (unsigned long *)compel_task_sigmask(ctl),
+	       sizeof(item->core[0]->tc->blk_sigset));
+	memcpy(&item->core[0]->tc->blk_sigset_extended, (unsigned long *)compel_task_sigmask(ctl) + 1,
+	       sizeof(item->core[0]->tc->blk_sigset));
 #else
 	memcpy(&item->core[0]->tc->blk_sigset, compel_task_sigmask(ctl), sizeof(k_rtsigset_t));
 #endif

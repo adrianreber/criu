@@ -10,8 +10,8 @@
 #define TEST_FILE "test_file"
 #define TEST_SYMLINK "test_symlink"
 
-const char *test_doc	= "Check open symlink preserved";
-const char *test_author	= "Pavel Tikhomirov <ptikhomirov@virtuozzo.com>";
+const char *test_doc = "Check open symlink preserved";
+const char *test_author = "Pavel Tikhomirov <ptikhomirov@virtuozzo.com>";
 
 char *dirname;
 TEST_OPTION(dirname, string, "directory name", 1);

@@ -31,7 +31,9 @@ static int port = 8880;
 
 #define BUF_SIZE 1024
 
-static void sig_hand(int signo) {}
+static void sig_hand(int signo)
+{
+}
 
 int main(int argc, char **argv)
 {
@@ -42,7 +44,7 @@ int main(int argc, char **argv)
 	int res;
 	uint32_t crc;
 	struct sigaction sa = {
-		.sa_handler	= sig_hand,
+		.sa_handler = sig_hand,
 		/* don't set SA_RESTART */
 	};
 
@@ -102,7 +104,6 @@ int main(int argc, char **argv)
 		goto error;
 	}
 	close(fd);
-
 
 	if (wait(&status) < 0) {
 		pr_perror("wait failed");

@@ -236,15 +236,13 @@ int main(int argc, char **argv)
 	}
 
 	sk_bsize = TCP_MAX_BUF;
-	if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF,
-			&sk_bsize, sizeof(sk_bsize)) == -1) {
+	if (setsockopt(fd, SOL_SOCKET, SO_SNDBUF, &sk_bsize, sizeof(sk_bsize)) == -1) {
 		pr_perror("Can't set snd buf");
 		return 1;
 	}
 
 	sk_bsize = TCP_MAX_BUF;
-	if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF,
-			&sk_bsize, sizeof(sk_bsize)) == -1) {
+	if (setsockopt(fd, SOL_SOCKET, SO_RCVBUF, &sk_bsize, sizeof(sk_bsize)) == -1) {
 		pr_perror("Can't set snd buf");
 		return 1;
 	}

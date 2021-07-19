@@ -63,8 +63,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	if (fcntl(fds[FD_LEASED1], F_SETLEASE, F_RDLCK) < 0 ||
-		fcntl(fds[FD_LEASED2], F_SETLEASE, F_RDLCK) < 0) {
+	if (fcntl(fds[FD_LEASED1], F_SETLEASE, F_RDLCK) < 0 || fcntl(fds[FD_LEASED2], F_SETLEASE, F_RDLCK) < 0) {
 		pr_err("Can't set leases\n");
 		close_files(fds);
 		return -1;
@@ -85,4 +84,3 @@ int main(int argc, char **argv)
 	close_files(fds);
 	return 0;
 }
-

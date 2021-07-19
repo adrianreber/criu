@@ -42,7 +42,7 @@ int main(int argc, char **argv)
 	 */
 
 	for (i = 0; i < MAX_RETRY; i++) {
-		if (access(SYNCFILE_PATH, F_OK )) {
+		if (access(SYNCFILE_PATH, F_OK)) {
 			/* Netns not created yet by post-start hook */
 			sleep(1);
 			continue;
