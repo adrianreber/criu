@@ -1,0 +1,25 @@
+Description: Explicitly enable FPU on ARM builds to fix FTBFS with gcc-11
+ Starting with gcc-11, Debian's armhf compiler no longer builds with
+ a default -mfpu= option. Instead it enables the FPU via an extension
+ to the -march flag (--with-arch=armv7-a+fp). criu's Makefile explicitly
+ passes its own -march=armv7-a setting, which overrides the +fp default,
+ so we end up with no FPU:
+  cc1: error: '-mfloat-abi=hard': selected architecture lacks an FPU
+Origin: vendor
+Bug: https://github.com/checkpoint-restore/criu/issues/1653
+Bug-Debian: https://bugs.debian.org/999680
+Forwarded: no
+Author: Salvatore Bonaccorso <carnil@debian.org>
+Last-Update: 2021-12-04
+
+--- a/Makefile
++++ b/Makefile
+@@ -39,7 +39,7 @@ ifeq ($(ARCH),arm)
+         endif
+ 
+         ifeq ($(ARMV),7)
+-                USERCFLAGS += -march=armv7-a
++                USERCFLAGS += -march=armv7-a+fp
+         endif
+ 
+         ifeq ($(ARMV),8)
